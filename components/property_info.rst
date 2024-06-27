@@ -57,12 +57,16 @@ provide it with a set of information extractors::
     // list of PropertyInitializableExtractorInterface (any iterable)
     $propertyInitializableExtractors = [$reflectionExtractor];
 
+    // list of PropertyAttributesExtractorInterface (any iterable)
+    $propertyAttributesExtractors = [$reflectionExtractor];
+
     $propertyInfo = new PropertyInfoExtractor(
         $listExtractors,
         $typeExtractors,
         $descriptionExtractors,
         $accessExtractors,
-        $propertyInitializableExtractors
+        $propertyInitializableExtractors,
+        $propertyAttributesExtractors
     );
 
     // see below for more examples
@@ -122,6 +126,7 @@ class exposes public methods to extract several types of information:
 * :ref:`Property description <property-info-description>`: :method:`Symfony\\Component\\PropertyInfo\\PropertyDescriptionExtractorInterface::getShortDescription` and :method:`Symfony\\Component\\PropertyInfo\\PropertyDescriptionExtractorInterface::getLongDescription`
 * :ref:`Property access details <property-info-access>`: :method:`Symfony\\Component\\PropertyInfo\\PropertyAccessExtractorInterface::isReadable` and  :method:`Symfony\\Component\\PropertyInfo\\PropertyAccessExtractorInterface::isWritable`
 * :ref:`Property initializable through the constructor <property-info-initializable>`:  :method:`Symfony\\Component\\PropertyInfo\\PropertyInitializableExtractorInterface::isInitializable`
+* :ref:`Property attributes <property-info-attributes>`:  :method:`Symfony\\Component\\PropertyInfo\\PropertyAttributesExtractorInterface::getAttributes`
 
 .. note::
 
@@ -263,6 +268,43 @@ provide whether properties are initializable through the class's constructor as 
 :method:`Symfony\\Component\\PropertyInfo\\Extractor\\ReflectionExtractor::isInitializable`
 returns ``true`` if a constructor's parameter of the given class matches the
 given property name.
+
+.. _property-info-attributes:
+
+Retrieving Property Attributes
+----------------------------------
+
+The :method:`Symfony\\Component\\PropertyInfo\\Extractor\\ReflectionExtractor::getAttributes` method can be used
+to retrieve attributes information, as shown in the example below::
+
+    namespace Acme;
+
+    #[\Attribute]
+    class SomeAttribute
+    {
+        public function __construct(
+            public string $type,
+        )
+        {
+        }
+    }
+
+    class YourAwesomeCoolClass
+    {
+        #[SomeAttribute(type: 'foo')]
+        public $bar;
+    }
+
+    $attributes = $propertyInfo->getAttributes(DummyWithAttributes::class, 'bar');
+    /*
+        Example Result
+        --------------
+        array(2) {
+            [0] => string(18) "Acme\SomeAttribute"
+            [1] => array(1) {
+                'type' => string(3) "foo"
+            }
+    */
 
 .. tip::
 
