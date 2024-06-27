@@ -295,7 +295,7 @@ to retrieve attributes information, as shown in the example below::
         public $bar;
     }
 
-    $attributes = $propertyInfo->getAttributes(DummyWithAttributes::class, 'bar');
+    $attributes = $propertyInfo->getAttributes(YourAwesomeCoolClass::class, 'bar');
     /*
         Example Result
         --------------
